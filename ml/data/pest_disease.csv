@@ -1,0 +1,8 @@
+crop,season,temp_min,temp_max,humidity_min,humidity_max,pest,disease,note
+rice,kharif,25,35,70,100,Brown planthopper,Blast,"High humidity + warm temp = BPH & Blast risk"
+wheat,rabi,15,25,50,80,Armyworm,Rust,"Cool season + moderate humidity = Rust risk"
+maize,kharif,20,35,60,90,Fall armyworm,Downy mildew,"Warm humid = FAW & Mildew"
+cotton,kharif,25,35,60,90,Bollworm,Leaf spot,"Warm humid = Bollworm + Leaf spot"
+pulses,kharif,20,30,60,85,Aphids,Yellow mosaic,"Moderate humidity favors pests & YMV"
+sugarcane,annual,25,35,65,95,Early shoot borer,Red rot,"Warm humid = borer & red rot risk"
+millets,kharif,20,32,50,80,Stem borer,Blast,"Drought + moderate humidity = risk"
