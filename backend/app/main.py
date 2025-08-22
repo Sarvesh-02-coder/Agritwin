@@ -8,48 +8,21 @@ from app.routers.irrigation import router as irrigation_router
 from app.routers.fertilizer import router as fertilizer_router
 from app.routers.pest import router as pest_router
 from app.routers import market
+from app.routers import weather_router
+from app.routers import crop, irrigation, fertilizer, pest, market, weather_router, farm_report
 app = FastAPI(title="AgriTwin Backend", version="0.1.0")
-app = FastAPI(title="AgriTwin API")
 app.include_router(crop_router)
 app.include_router(irrigation_router)  
 app.include_router(fertilizer_router)
 app.include_router(pest_router)
 app.include_router(market.router)
-
+app.include_router(weather_router.router)
+app.include_router(farm_report.router)
 
 # ---------------- Health Check ----------------
 @app.get("/")
 def health():
     return {"status": "ok", "service": "AgriTwin Backend"}
-
-
-# ---------------- Weather Endpoint ----------------
-from pydantic import BaseModel
-
-class WeatherRequest(BaseModel):
-    lat: float
-    lon: float
-    days: int = 7
-
-@app.post("/weather")
-def weather(req: WeatherRequest):
-    """
-    Fetch weather data from NASA POWER API
-    """
-    try:
-        data = get_weather(req.lat, req.lon, req.days)
-        return {
-            "lat": req.lat,
-            "lon": req.lon,
-            "days": req.days,
-            "message": "Weather data fetched successfully",
-            "sample_keys": list(data.keys())
-        }
-    except Exception as e:
-        return {"error": str(e)}
-
-
-
 # ---------------- Yield Prediction ----------------
 class YieldInput(BaseModel):
     soil_moisture_: float  # %

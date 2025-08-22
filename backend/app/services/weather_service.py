@@ -1,37 +1,44 @@
 import requests
 import json
-import csv
 import pandas as pd
 from pathlib import Path
 from datetime import date, timedelta
 
 # Paths
 CACHE_DIR = Path(__file__).parent.parent / "cache"
-DATA_DIR = Path(__file__).resolve().parents[3] / "ml" / "data"   # go 3 levels up to Agritwin/ml/data
-PINCODE_FILE = Path(__file__).parent / "pincode_to_latlon.json"
+DATA_DIR = Path(__file__).resolve().parents[3] / "ml" / "data"
 
 CACHE_DIR.mkdir(exist_ok=True)
-DATA_DIR.mkdir(parents=True, exist_ok=True)   # auto-create ml/data if missing
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 BASE_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
+GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
 
 
-def load_pincode_mapping():
-    """Load static pincode → lat/lon mapping."""
-    if not PINCODE_FILE.exists():
-        raise FileNotFoundError(f"Pincode mapping file missing: {PINCODE_FILE}")
-    with open(PINCODE_FILE, "r") as f:
-        return json.load(f)
+def get_latlon_from_pincode(pincode: str):
+    """Convert pincode → (lat, lon) using OpenStreetMap Nominatim."""
+    params = {
+        "postalcode": pincode,
+        "country": "India",
+        "format": "json",
+        "limit": 1
+    }
+    resp = requests.get(GEOCODE_URL, params=params, headers={"User-Agent": "AgriTwin/1.0"}, timeout=20)
+    resp.raise_for_status()
+    data = resp.json()
+
+    if not data:
+        raise ValueError(f"❌ Could not find coordinates for pincode {pincode}")
+
+    lat, lon = float(data[0]["lat"]), float(data[0]["lon"])
+    return lat, lon
 
 
 def fetch_weather(pincode: str, days: int = 30):
     """Fetch last N days weather for a given pincode and save as CSV with rolling averages."""
 
-    mapping = load_pincode_mapping()
-    if pincode not in mapping:
-        raise ValueError(f"Pincode {pincode} not found in mapping file")
-
-    lat, lon = mapping[pincode]["lat"], mapping[pincode]["lon"]
+    # Step 1: Convert pincode → lat/lon
+    lat, lon = get_latlon_from_pincode(pincode)
 
     today = date.today()
     end = today - timedelta(days=1)
@@ -59,7 +66,7 @@ def fetch_weather(pincode: str, days: int = 30):
         with open(cache_file, "w") as f:
             json.dump(data, f)
 
-    # Parse NASA response
+    # Step 2: Parse NASA response
     params = data["properties"]["parameter"]
     temps = params.get("T2M", {})
     hums = params.get("RH2M", {})
@@ -82,9 +89,7 @@ def fetch_weather(pincode: str, days: int = 30):
             "sunlight_hours": round(sunlight_hours, 2)
         })
 
-    # Convert to DataFrame for rolling averages
-    df = pd.DataFrame(records)
-    df = df.sort_values("date")
+    df = pd.DataFrame(records).sort_values("date")
 
     # Rolling 7-day mean
     rolling_cols = ["temperature_C", "humidity_%", "rainfall_mm", "sunlight_hours"]
@@ -92,10 +97,11 @@ def fetch_weather(pincode: str, days: int = 30):
         df[f"{col}_7d_avg"] = df[col].rolling(window=7, min_periods=1).mean().round(2)
 
     # Save as CSV
-    csv_path = DATA_DIR / f"weather_{pincode}.csv"
+    created_date = date.today().strftime("%Y%m%d")
+    csv_path = DATA_DIR / f"weather_{pincode}_{created_date}.csv"
     df.to_csv(csv_path, index=False)
 
-    print(f"✅ Weather data with rolling averages saved to {csv_path}")
+    print(f"✅ Weather data for {pincode} saved to {csv_path}")
     return csv_path
 
 
