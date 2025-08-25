@@ -8,9 +8,9 @@ import requests
 # ----------------------------
 # Paths (relative to backend/app/ml)
 # ----------------------------
-ROOT_DIR = Path(__file__).resolve().parents[3]   # Agritwin/
-MODEL_PATH = ROOT_DIR / "ml" / "artifacts" / "yield_model.pkl"
-CACHE_PATH = ROOT_DIR / "ml" / "artifacts" / "soil_cache.csv"
+ROOT_DIR = Path(__file__).resolve().parent
+MODEL_PATH = ROOT_DIR / "artifacts" / "yield_model.pkl"
+CACHE_PATH = ROOT_DIR / "artifacts" / "soil_cache.csv"
 
 # ----------------------------
 # Load model

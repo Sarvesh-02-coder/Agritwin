@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 from app.models.pydantic_schemas import PestAlertRequest, PestDiseaseAlert
 import os
-DATA_DIR = Path(__file__).resolve().parents[3] / "ml" / "data"
+DATA_DIR = Path(__file__).resolve().parents[1] / "ml" / "data"
 PEST_CSV = DATA_DIR / "pest_disease.csv"
 PEST_DF = pd.read_csv(PEST_CSV)
 

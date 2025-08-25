@@ -1,46 +1,36 @@
 # backend/app/routers/farm_report.py
 from fastapi import APIRouter
-from typing import Optional, Dict, Any
 from app.services import advisors, market_service
+from app.schemas.response import FarmReportResponse
+from app.models.pydantic_schemas import FarmReportRequest
 
 router = APIRouter(prefix="/farm-report", tags=["farm-report"])
 
-@router.post("")
-def farm_report(
-    soil_pH: Optional[float] = None,
-    rainfall_mm_7d: Optional[float] = None,
-    season: Optional[str] = None,
-    soil_moisture: Optional[float] = None,
-    n: Optional[float] = None,
-    p: Optional[float] = None,
-    k: Optional[float] = None,
-    crop: Optional[str] = None,
-    temp_c: Optional[float] = None,
-    humidity_pct: Optional[float] = None,
-) -> Dict[str, Any]:
+@router.post("/", response_model=FarmReportResponse)
+def farm_report(req: FarmReportRequest) -> FarmReportResponse:
     """
     Aggregated farm advisory report.
     Combines crop recommendation, irrigation, fertilizer, pest, and market services.
     """
 
-    # Use advisors.py (your rule-based services)
-    crop_recos = advisors.recommend_crops(soil_pH, rainfall_mm_7d, season)
-    irrigation = advisors.irrigation_advice(soil_moisture, rainfall_mm_7d, crop)
-    fert = advisors.fertilizer_recommendation(n, p, k, crop, soil_pH)
-    pests = advisors.pest_alerts(crop, temp_c, humidity_pct, season)
+    # Use advisors.py (rule-based services)
+    crop_recos = advisors.recommend_crops(req.soil_pH, req.rainfall_mm_7d, req.season)
+    irrigation = advisors.irrigation_advice(req.soil_moisture, req.rainfall_mm_7d, req.crop)
+    fert = advisors.fertilizer_recommendation(req.n, req.p, req.k, req.crop, req.soil_pH)
+    pests = advisors.pest_alerts(req.crop, req.temp_c, req.humidity_pct, req.season)
 
-    # Market price service (fallback = no data)
+    # Market price service
     try:
         market = market_service.fetch_market_price(
-            {"commodity": crop, "state": None, "district": None}
+            {"commodity": req.crop, "state": None, "district": None}
         )
     except Exception:
         market = {"status": "no data"}
 
-    return {
-        "crop_recommendations": crop_recos,
-        "irrigation": irrigation,
-        "fertilizer": fert,
-        "pest_alerts": pests,
-        "market": market,
-    }
+    return FarmReportResponse(
+        crop_recommendations=crop_recos,
+        irrigation=irrigation,
+        fertilizer=fert,
+        pest_alerts=pests,
+        market=market,
+    )

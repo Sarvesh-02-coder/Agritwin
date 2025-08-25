@@ -46,31 +46,63 @@ def irrigation_advice(soil_moisture: Optional[float],
     }
 
 
-def fertilizer_recommendation(n: Optional[float], p: Optional[float], k: Optional[float],
-                              crop: Optional[str], soil_pH: Optional[float]) -> Dict[str, Any]:
-    crop = (crop or "Generic").lower()
-    n = n if n is not None else 0.0
-    p = p if p is not None else 0.0
-    k = k if k is not None else 0.0
-    pH = soil_pH if soil_pH is not None else 6.8
+# backend/app/services/advisors.py
 
-    # very simple “gap to target” logic (illustrative only)
-    need_n = 100 - n if n < 100 else 0
-    need_p = 60 - p if p < 60 else 0
-    need_k = 60 - k if k < 60 else 0
+def fertilizer_recommendation(n: float, p: float, k: float, crop: str, soil_pH: float):
+    crop = crop.lower()
 
-    note = None
-    if pH < 5.5:
-        note = "Soil acidic: consider liming."
-    elif pH > 8.0:
-        note = "Soil alkaline: split N doses; use SSP for P."
+    CROP_NPK_REQUIREMENTS = {
+        "rice": {"N": 100, "P": 50, "K": 60},
+        "wheat": {"N": 80, "P": 40, "K": 50},
+        "maize": {"N": 120, "P": 60, "K": 70},
+        "millets": {"N": 60, "P": 30, "K": 40},
+        "pulses": {"N": 20, "P": 40, "K": 20},
+        "default": {"N": 50, "P": 30, "K": 40},
+    }
+
+    requirements = CROP_NPK_REQUIREMENTS.get(crop, CROP_NPK_REQUIREMENTS["default"])
+    notes = []
+
+    # Check deficiencies/excess
+    n_gap = requirements["N"] - n
+    p_gap = requirements["P"] - p
+    k_gap = requirements["K"] - k
+
+    if n_gap > 0:
+        notes.append(f"Nitrogen is below recommended for {crop}. Add {n_gap} kg/ha more.")
+    elif n_gap < 0:
+        notes.append(f"Nitrogen is higher than required for {crop}. Reduce application to avoid leaching.")
+
+    if p_gap > 0:
+        notes.append(f"Phosphorus is below recommended for {crop}. Add {p_gap} kg/ha more.")
+    elif p_gap < 0:
+        notes.append(f"Phosphorus is higher than required for {crop}. Excess can cause soil fixation.")
+
+    if k_gap > 0:
+        notes.append(f"Potassium level is low for {crop}. Increase by {k_gap} kg/ha.")
+    elif k_gap < 0:
+        notes.append(f"Potassium is above recommended. Excess K can hinder magnesium uptake.")
+
+    # Soil pH analysis
+    if soil_pH < 5.5:
+        notes.append("Soil is acidic. Apply lime or dolomite to raise pH.")
+    elif 5.5 <= soil_pH <= 7.5:
+        notes.append("Soil pH is optimal for nutrient uptake.")
+    elif soil_pH > 7.5:
+        notes.append("Soil is alkaline. Apply gypsum or organic amendments to improve fertility.")
+
+    if soil_pH < 4.5 or soil_pH > 8.5:
+        notes.append("⚠️ Extreme soil pH detected. Crop yield may be severely affected.")
 
     return {
-        "N_required_kg_ha": max(round(need_n, 1), 0),
-        "P_required_kg_ha": max(round(need_p, 1), 0),
-        "K_required_kg_ha": max(round(need_k, 1), 0),
-        "notes": note
+        "recommendations": {
+            "N_required_kg_ha": requirements["N"],
+            "P_required_kg_ha": requirements["P"],
+            "K_required_kg_ha": requirements["K"],
+        },
+        "notes": notes,
     }
+
 
 
 def pest_alerts(crop: Optional[str],
