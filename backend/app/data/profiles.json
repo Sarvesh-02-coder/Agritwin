@@ -1,9 +1,26 @@
 [
   {
-    "name": "Sarvesh",
+    "name": "Sarvesh ",
     "phone": "9860039768",
     "crop": "rice",
     "location": "411011",
-    "sms_alerts": false
+    "smsAlerts": true,
+    "farmArea": 2
+  },
+  {
+    "name": "Shalvi",
+    "phone": "8669881079",
+    "crop": "wheat",
+    "location": "411044",
+    "smsAlerts": true,
+    "farmArea": 4
+  },
+  {
+    "name": "Laukika",
+    "phone": "9309344314",
+    "crop": "tomato",
+    "location": "411018",
+    "smsAlerts": true,
+    "farmArea": 2.5
   }
 ]

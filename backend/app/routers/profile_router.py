@@ -1,44 +1,43 @@
-# backend/app/routers/profile_router.py
 from fastapi import APIRouter, HTTPException
-from app.models.pydantic_schemas import Profile
-from app.services import profile_service
-from app.schemas.response import ProfileResponse
+from typing import Dict
+from ..services import profile_service
 
 router = APIRouter(prefix="/profile", tags=["Profile"])
 
-@router.post("/", response_model=ProfileResponse)
-def create_profile(profile: Profile):
-    """
-    Create a new user profile.
-    """
-    try:
-        created = profile_service.add_profile(profile.dict())
-        return ProfileResponse(success=True, data=created, message="Profile created successfully")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/")
+def get_profiles():
+    return {
+        "success": True,
+        "data": profile_service.get_profiles()
+    }
 
 
-@router.get("/", response_model=ProfileResponse)
-def read_profiles():
-    """
-    Fetch all profiles.
-    """
-    try:
-        profiles = profile_service.get_profiles()
-        return ProfileResponse(success=True, data=profiles, message="Profiles fetched successfully")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/")
+def add_or_update(profile: Dict):
+    if "phone" not in profile or not profile["phone"].strip():
+        raise HTTPException(status_code=400, detail="Phone number is required")
 
+    result = profile_service.add_or_update_profile(profile)
 
-@router.put("/{phone}", response_model=ProfileResponse)
-def update_profile(phone: str, profile: Profile):
-    """
-    Update an existing profile by phone number.
-    """
-    try:
-        updated = profile_service.update_profile(phone, profile.dict())
-        return ProfileResponse(success=True, data=updated, message="Profile updated successfully")
-    except ValueError:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Differentiate between create, update, and no-change
+    if result["message"] == "No changes detected":
+        return {
+            "success": False,
+            "message": result["message"],
+            "data": result["profile"]
+        }
+    elif result["message"] == "Profile updated successfully":
+        return {
+            "success": True,
+            "message": result["message"],
+            "data": result["profile"],
+            "action": "updated"
+        }
+    else:  # Profile created
+        return {
+            "success": True,
+            "message": result["message"],
+            "data": result["profile"],
+            "action": "created"
+        }

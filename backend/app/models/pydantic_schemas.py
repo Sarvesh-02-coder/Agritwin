@@ -89,13 +89,6 @@ class PriceResponse(BaseModel):
     avg_price: float
     prices: List[PriceData]
 
-class Profile(BaseModel):
-    name: str
-    phone: int
-    crop: Optional[str] = None
-    location: Optional[str] = None
-    sms_alerts: bool = False
-
 class FarmReportRequest(BaseModel):
     soil_pH: Optional[float] = None
     rainfall_mm_7d: Optional[float] = None
@@ -125,8 +118,7 @@ from typing import Optional
 class Profile(BaseModel):
     name: str
     phone: str
-    email: Optional[str] = None
-    state: Optional[str] = None
-    district: Optional[str] = None
-    farm_size: Optional[float] = None
-    soil_type: Optional[str] = None
+    location: str
+    crop: Optional[str] = None
+    smsAlerts: bool = False
+    farmArea: float
