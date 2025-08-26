@@ -24,20 +24,21 @@ const Profile = () => {
     smsAlerts: false,
     farmArea: 0,
   });
+
   const refreshProfile = async () => {
     try {
       const res = await fetch(`${API_BASE}/profile/`);
       const data = await res.json();
       if (data.success && data.data.length > 0) {
         setProfiles(data.data);
-        setFormData(data.data[0]); // 🔥 Always set to top profile
-        setSelectedPhone(data.data[0].phone);
+        const activeProfile = data.data.find((p: any) => p.active) || data.data[0];
+        setFormData(activeProfile);
+        setSelectedPhone(activeProfile.phone);
       }
     } catch (err) {
       console.error("Error refreshing profile:", err);
     }
   };
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,9 +48,9 @@ const Profile = () => {
 
         if (data.success && data.data && data.data.length > 0) {
           setProfiles(data.data);
-          const latestProfile = data.data[data.data.length - 1];
-          setFormData(latestProfile);
-          setSelectedPhone(latestProfile.phone);
+          const activeProfile = data.data.find((p: any) => p.active) || data.data[data.data.length - 1];
+          setFormData(activeProfile);
+          setSelectedPhone(activeProfile.phone);
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -183,7 +184,6 @@ const Profile = () => {
     }
   };
 
-
   if (loading) {
     return (
       <div className="min-h-screen dashboard-gradient flex items-center justify-center">
@@ -202,13 +202,20 @@ const Profile = () => {
           value={selectedPhone}
           onValueChange={(value) => setSelectedPhone(value)}
         >
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-56">
             <SelectValue placeholder="Select a profile" />
           </SelectTrigger>
           <SelectContent>
             {profiles.map((p) => (
               <SelectItem key={p.phone} value={p.phone}>
-                {p.name || p.phone}
+                <div className="flex items-center justify-between w-full">
+                  <span>{p.name || p.phone}</span>
+                  {p.active && (
+                    <span className="ml-2 text-xs text-green-600 font-semibold">
+                      Active
+                    </span>
+                  )}
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
