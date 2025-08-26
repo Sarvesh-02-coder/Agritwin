@@ -60,3 +60,37 @@ class PestResponse(BaseModel):
     success: bool
     data: Optional[List[str]] = None
     message: str
+
+class APIResponse(BaseModel):
+    """
+    Standardized API response wrapper
+    """
+    status: str = "success"
+    message: Optional[str] = None
+    data: Optional[Dict[str, Any]] = None
+
+
+class ErrorResponse(BaseModel):
+    """
+    Error response format
+    """
+    status: str = "error"
+    message: str
+    details: Optional[Dict[str, Any]] = None
+
+
+# --- Specialized Responses for Irrigation ---
+class WeeklyWeatherData(BaseModel):
+    date: str
+    temperature_C: float
+    humidity_pct: float
+    rainfall_mm: float
+    sunlight_hours: float
+
+
+class IrrigationAdviceResponse(BaseModel):
+    water_needed_mm: float
+    water_needed_liters: float
+    rationale: str
+    weather_summary: Dict[str, float]
+    weather_weekly: List[WeeklyWeatherData]

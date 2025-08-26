@@ -41,3 +41,18 @@ def add_or_update(profile: Dict):
             "data": result["profile"],
             "action": "created"
         }
+
+
+# 🔹 Switch active profile
+@router.post("/switch/{phone}")
+def switch_profile(phone: str):
+    result = profile_service.switch_profile(phone)
+    if result["profile"] is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    return {
+        "success": True,
+        "message": result["message"],
+        "data": result["profile"],
+        "action": "switched"
+    }

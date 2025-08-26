@@ -1,26 +1,38 @@
 [
   {
-    "name": "Sarvesh ",
-    "phone": "9860039768",
-    "crop": "rice",
-    "location": "411011",
-    "smsAlerts": true,
-    "farmArea": 2
-  },
-  {
     "name": "Shalvi",
     "phone": "8669881079",
     "crop": "wheat",
     "location": "411044",
     "smsAlerts": true,
-    "farmArea": 4
+    "farmArea": 4,
+    "active": false
+  },
+  {
+    "name": "Sam",
+    "phone": "9996617038",
+    "crop": "rice",
+    "location": "413001",
+    "smsAlerts": true,
+    "farmArea": 2,
+    "active": false
+  },
+  {
+    "name": "Sarvesh ",
+    "phone": "9860039768",
+    "crop": "rice",
+    "location": "110001",
+    "smsAlerts": true,
+    "farmArea": 2.5,
+    "active": true
   },
   {
     "name": "Laukika",
     "phone": "9309344314",
-    "crop": "tomato",
-    "location": "411018",
+    "crop": "sugarcane",
+    "location": "110002",
     "smsAlerts": true,
-    "farmArea": 2.5
+    "farmArea": 2.5,
+    "active": false
   }
 ]

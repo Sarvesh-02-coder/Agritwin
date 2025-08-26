@@ -21,12 +21,26 @@ class IrrigationRequest(BaseModel):
     crop: str
     area_hectares: float
     soil_moisture: float  # % volumetric water content
-    rainfall_forecast_mm: float
+    pincode: str          # Needed to fetch NASA weather
+
+from pydantic import BaseModel
+from typing import Optional, List
+
+
+class IrrigationProfile(BaseModel):
+    crop: str
+    farmArea: float
+    location: str   # pincode
+
 
 class IrrigationResponse(BaseModel):
     water_needed_mm: float
     water_needed_liters: float
     rationale: str
+    weather_summary: dict
+    weather_weekly: List[dict]
+
+
 
 SoilLevel = Literal["low", "medium", "high"]
 

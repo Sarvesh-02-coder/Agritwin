@@ -37,6 +37,12 @@ def add_or_update_profile(profile: Dict) -> Dict:
             return {"message": "Profile updated successfully", "profile": profile}
 
     # New profile
+    # If this is the first profile, make it active
+    if not profiles:
+        profile["active"] = True
+    else:
+        profile["active"] = False
+
     profiles.append(profile)
     save_profiles(profiles)
     return {"message": "Profile created successfully", "profile": profile}
@@ -50,5 +56,38 @@ def get_profile_by_phone(phone: str) -> Optional[Dict]:
     profiles = load_profiles()
     for p in profiles:
         if p["phone"] == phone.strip():
+            return p
+    return None
+
+
+# 🔹 New function: Switch active profile
+def switch_profile(phone: str) -> Dict:
+    profiles = load_profiles()
+    phone = phone.strip()
+    found = None
+
+    for p in profiles:
+        if p["phone"] == phone:
+            found = p
+
+    if not found:
+        return {"message": "Profile not found", "profile": None}
+
+    # Clear all active flags
+    for p in profiles:
+        p["active"] = False
+
+    # Set this one active
+    found["active"] = True
+    save_profiles(profiles)
+
+    return {"message": "Profile switched successfully", "profile": found}
+
+
+# 🔹 Helper: get the active profile
+def get_active_profile() -> Optional[Dict]:
+    profiles = load_profiles()
+    for p in profiles:
+        if p.get("active"):
             return p
     return None

@@ -14,6 +14,8 @@ const API_BASE = "http://localhost:8000";
 const Profile = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -22,6 +24,20 @@ const Profile = () => {
     smsAlerts: false,
     farmArea: 0,
   });
+  const refreshProfile = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/profile/`);
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        setProfiles(data.data);
+        setFormData(data.data[0]); // 🔥 Always set to top profile
+        setSelectedPhone(data.data[0].phone);
+      }
+    } catch (err) {
+      console.error("Error refreshing profile:", err);
+    }
+  };
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -30,9 +46,10 @@ const Profile = () => {
         const data = await res.json();
 
         if (data.success && data.data && data.data.length > 0) {
-          // 👉 Load the latest (last) profile
+          setProfiles(data.data);
           const latestProfile = data.data[data.data.length - 1];
           setFormData(latestProfile);
+          setSelectedPhone(latestProfile.phone);
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -49,90 +66,123 @@ const Profile = () => {
     fetchProfile();
   }, [toast]);
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | number) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-    const handleSave = async () => {
-      try {
-        if (!formData.phone) {
-          toast({
-            title: "Phone number required",
-            description: "Please enter your phone number before saving",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // ✅ PIN code validation
-        if (!/^\d{6}$/.test(formData.location)) {
-          toast({
-            title: "Invalid PIN Code",
-            description: "Please enter a valid 6-digit Indian PIN code",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (formData.farmArea <= 0) {
-          toast({
-            title: "Invalid Farm Area",
-            description: "Please enter a valid farm size greater than 0",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // 🔹 Just call POST /profile/ (backend decides create/update/no-change)
-        const res = await fetch(`${API_BASE}/profile/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          toast({
-            title: "Error",
-            description: data.detail || "Failed to save profile",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // 🔹 Handle based on backend "action"
-        if (data.action === "created") {
-          toast({
-            title: "Profile Created!",
-            description: "Your profile has been saved successfully",
-            variant: "default",
-          });
-        } else if (data.action === "updated") {
-          toast({
-            title: "Profile Updated!",
-            description: "Your profile changes have been saved",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "No Update Needed",
-            description: "No changes were detected in your profile",
-            variant: "default",
-          });
-        }
-      } catch (err) {
-        console.error("Save error:", err);
+  const handleSave = async () => {
+    try {
+      if (!formData.phone) {
         toast({
-          title: "Error",
-          description: "Failed to connect to server",
+          title: "Phone number required",
+          description: "Please enter your phone number before saving",
           variant: "destructive",
         });
+        return;
       }
-    };
+
+      if (!/^\d{6}$/.test(formData.location)) {
+        toast({
+          title: "Invalid PIN Code",
+          description: "Please enter a valid 6-digit Indian PIN code",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (formData.farmArea <= 0) {
+        toast({
+          title: "Invalid Farm Area",
+          description: "Please enter a valid farm size greater than 0",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/profile/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast({
+          title: "Error",
+          description: data.detail || "Failed to save profile",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.action === "created") {
+        toast({
+          title: "Profile Created!",
+          description: "Your profile has been saved successfully",
+          variant: "default",
+        });
+      } else if (data.action === "updated") {
+        toast({
+          title: "Profile Updated!",
+          description: "Your profile changes have been saved",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "No Update Needed",
+          description: "No changes were detected in your profile",
+          variant: "default",
+        });
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      toast({
+        title: "Error",
+        description: "Failed to connect to server",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSwitchProfile = async () => {
+    if (!selectedPhone) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/profile/switch/${selectedPhone}`, {
+        method: "POST",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast({
+          title: "Error",
+          description: data.detail || "Failed to switch profile",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // 🔥 After switching, refresh profile list so top one is active
+      await refreshProfile();
+
+      toast({
+        title: "Profile Switched",
+        description: `Active profile set to ${data.data.name || data.data.phone}`,
+      });
+    } catch (err) {
+      console.error("Switch error:", err);
+      toast({
+        title: "Error",
+        description: "Could not switch profile",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -145,6 +195,26 @@ const Profile = () => {
   return (
     <div className="min-h-screen dashboard-gradient">
       <Navbar />
+
+      {/* Switch Profile Section (top-right) */}
+      <div className="flex justify-end items-center space-x-2 px-4 py-2">
+        <Select
+          value={selectedPhone}
+          onValueChange={(value) => setSelectedPhone(value)}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Select a profile" />
+          </SelectTrigger>
+          <SelectContent>
+            {profiles.map((p) => (
+              <SelectItem key={p.phone} value={p.phone}>
+                {p.name || p.phone}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button onClick={handleSwitchProfile}>Switch</Button>
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -208,7 +278,6 @@ const Profile = () => {
                   value={formData.location}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // Allow only digits and max 6 length
                     if (/^\d{0,6}$/.test(value)) {
                       handleInputChange("location", value);
                     }
@@ -217,7 +286,6 @@ const Profile = () => {
                   className="transition-smooth"
                 />
               </div>
-
 
               {/* Crop Selection */}
               <div className="space-y-2">
@@ -260,7 +328,6 @@ const Profile = () => {
                   className="transition-smooth"
                 />
               </div>
-
 
               {/* SMS Alerts Checkbox */}
               <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-lg">
