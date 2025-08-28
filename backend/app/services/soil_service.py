@@ -17,6 +17,18 @@ GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
 SOILGRIDS_URL = "https://rest.isric.org/soilgrids/v2.0/properties/query"
 
 
+# ✅ fallback soil values (safe defaults)
+DEFAULT_SOIL = {
+    "phh2o": 7.0,
+    "soc": 0.75,
+    "sand": 40,
+    "silt": 40,
+    "clay": 20,
+    "_distance_km": None,
+    "_note": "Default soil data used (SoilGrids unavailable)"
+}
+
+
 def get_latlon_from_pincode(pincode: str):
     """Convert pincode → (lat, lon) using OpenStreetMap Nominatim."""
     params = {
@@ -37,7 +49,7 @@ def get_latlon_from_pincode(pincode: str):
 
 
 def query_soilgrids(lat: float, lon: float):
-    """Query SoilGrids API for given lat/lon."""
+    """Query SoilGrids API for given lat/lon with error handling."""
     params = {
         "lat": lat,
         "lon": lon,
@@ -45,13 +57,23 @@ def query_soilgrids(lat: float, lon: float):
         "value": "mean",
         "property": ["phh2o", "soc", "sand", "silt", "clay"]
     }
-    resp = requests.get(SOILGRIDS_URL, params=params, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
+    try:
+        resp = requests.get(SOILGRIDS_URL, params=params, timeout=30)
+        resp.raise_for_status()
+        return resp.json()
+    except requests.exceptions.HTTPError as e:
+        if resp.status_code == 429:
+            # Too many requests → fallback
+            return None
+        raise e
+    except Exception:
+        return None
 
 
 def parse_soilgrids(data: dict) -> dict:
     """Extract values safely from SoilGrids JSON."""
+    if not data:
+        return {}
     result = {}
     for layer in data.get("properties", {}).get("layers", []):
         name = layer.get("name")
@@ -86,7 +108,7 @@ def fetch_with_fallback(lat, lon, max_km=20, step_km=2):
 
 
 def fetch_soil_data(pincode: str):
-    """Fetch soil properties and save CSV."""
+    """Fetch soil properties and save CSV, fallback to defaults if needed."""
     lat, lon = get_latlon_from_pincode(pincode)
     created_date = date.today().strftime("%Y%m%d")
 
@@ -98,7 +120,9 @@ def fetch_soil_data(pincode: str):
     else:
         parsed, distance_used = fetch_with_fallback(lat, lon)
         if not parsed:
-            raise ValueError(f"❌ No soil data found near pincode {pincode}")
+            # ✅ fallback soil values if SoilGrids fails
+            parsed = DEFAULT_SOIL.copy()
+            distance_used = None
 
         parsed["_distance_km"] = distance_used
         with open(cache_file, "w") as f:
@@ -132,14 +156,14 @@ def summarize_soil(pincode: str) -> dict:
 
     if pd.isna(ph):
         return {
-            "pH": None,
-            "pH_status": "Unknown",
-            "organic_carbon_pct": None,
-            "sand_pct": None,
-            "silt_pct": None,
-            "clay_pct": None,
-            "soil_texture": "Unknown",
-            "note": "No soil data found nearby, pincode must be in a city /urban area."
+            "pH": DEFAULT_SOIL["phh2o"],
+            "pH_status": "Neutral",
+            "organic_carbon_pct": DEFAULT_SOIL["soc"],
+            "sand_pct": DEFAULT_SOIL["sand"],
+            "silt_pct": DEFAULT_SOIL["silt"],
+            "clay_pct": DEFAULT_SOIL["clay"],
+            "soil_texture": "Loamy",
+            "note": "Default soil data used (SoilGrids unavailable)"
         }
 
     ph = round(float(ph), 1)
@@ -171,7 +195,7 @@ def summarize_soil(pincode: str) -> dict:
         "silt_pct": silt,
         "clay_pct": clay,
         "soil_texture": texture,
-        "note": f"Data taken from {distance_used} km away" if distance_used else "Direct match"
+        "note": f"Data taken from {distance_used} km away" if distance_used else "Direct match or default"
     }
 
 

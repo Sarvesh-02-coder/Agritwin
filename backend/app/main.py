@@ -10,6 +10,7 @@ from app.routers.market import router as market_router
 from app.routers.weather_router import router as weather_router
 from app.routers.farm_report import router as farm_report_router
 from app.routers.profile_router import router as profile_router
+from app.routers.forecast import router as forecast_router
 #from app.routers.smart import router as smart_router
 from app.routers.soil import router as soil_router
 from app.routers import dashboard  # add this import
@@ -44,3 +45,4 @@ app.include_router(profile_router)
 #app.include_router(smart_router)
 app.include_router(dashboard.router)
 app.include_router(soil_router)
+app.include_router(forecast_router)

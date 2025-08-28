@@ -1,25 +1,77 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, DollarSign, Calendar, Target } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
-const RiskForecast = () => {
-  const yieldForecast = [
-    { month: 'Jan', yield: 85, income: 42500 },
-    { month: 'Feb', yield: 92, income: 46000 },
-    { month: 'Mar', yield: 88, income: 44000 },
-    { month: 'Apr', yield: 95, income: 47500 },
-    { month: 'May', yield: 100, income: 50000 },
-    { month: 'Jun', yield: 105, income: 52500 }
-  ];
+interface YieldForecast {
+  month: string;
+  yield: number;
+  income: number;
+}
 
-  const riskFactors = [
-    { factor: 'Weather', risk: 35 },
-    { factor: 'Market Price', risk: 20 },
-    { factor: 'Pest/Disease', risk: 15 },
-    { factor: 'Input Costs', risk: 25 },
-    { factor: 'Labor', risk: 12 }
-  ];
+interface RiskFactor {
+  factor: string;
+  risk: number;
+}
+
+interface ForecastSummary {
+  expected_yield_qtl: number;
+  expected_income_inr: number;
+  harvest_date_label: string;
+  risk_level: string;
+  overall_risk_pct: number;
+}
+
+const RiskForecast = () => {
+  const [summary, setSummary] = useState<ForecastSummary | null>(null);
+  const [yieldForecast, setYieldForecast] = useState<YieldForecast[]>([]);
+  const [riskFactors, setRiskFactors] = useState<RiskFactor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchForecast = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/forecast/");
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        const json = await res.json();
+
+        if (json.success && json.data && json.data.forecast) {
+          setSummary(json.data.forecast.summary);
+          setYieldForecast(json.data.forecast.yieldForecast);
+          setRiskFactors(json.data.forecast.riskFactors);
+
+          // ✅ Debugging log
+          console.log("RiskFactors:", json.data.forecast.riskFactors);
+        } else {
+          throw new Error("Invalid response structure");
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch forecast");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchForecast();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-muted-foreground">Loading forecast...</p>
+      </div>
+    );
+  }
+
+  if (error || !summary) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-red-500">{error || "No forecast data available"}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen dashboard-gradient">
@@ -38,7 +90,7 @@ const RiskForecast = () => {
               <div className="flex items-center space-x-2">
                 <Target className="h-8 w-8 text-success" />
                 <div>
-                  <p className="text-2xl font-bold text-success">95%</p>
+                  <p className="text-2xl font-bold text-success">{summary.expected_yield_qtl.toFixed(1)} qtl</p>
                   <p className="text-sm text-muted-foreground">Expected Yield</p>
                 </div>
               </div>
@@ -50,8 +102,8 @@ const RiskForecast = () => {
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-8 w-8 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold text-primary">₹47.5K</p>
-                  <p className="text-sm text-muted-foreground">Monthly Income</p>
+                  <p className="text-2xl font-bold text-primary">₹{(summary.expected_income_inr / 1000).toFixed(1)}K</p>
+                  <p className="text-sm text-muted-foreground">Expected Income</p>
                 </div>
               </div>
             </CardContent>
@@ -62,7 +114,7 @@ const RiskForecast = () => {
               <div className="flex items-center space-x-2">
                 <Calendar className="h-8 w-8 text-success" />
                 <div>
-                  <p className="text-2xl font-bold text-success">Apr 15</p>
+                  <p className="text-2xl font-bold text-success">{summary.harvest_date_label}</p>
                   <p className="text-sm text-muted-foreground">Harvest Date</p>
                 </div>
               </div>
@@ -74,7 +126,7 @@ const RiskForecast = () => {
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-8 w-8 text-warning" />
                 <div>
-                  <p className="text-2xl font-bold text-warning">Medium</p>
+                  <p className="text-2xl font-bold text-warning">{summary.risk_level}</p>
                   <p className="text-sm text-muted-foreground">Risk Level</p>
                 </div>
               </div>
@@ -94,45 +146,16 @@ const RiskForecast = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={yieldForecast}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="month" 
-                      stroke="hsl(var(--muted-foreground))"
-                    />
-                    <YAxis 
-                      yAxisId="yield"
-                      orientation="left"
-                      stroke="hsl(var(--muted-foreground))"
-                    />
-                    <YAxis 
-                      yAxisId="income"
-                      orientation="right"
-                      stroke="hsl(var(--muted-foreground))"
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '0.5rem'
-                      }}
-                    />
-                    <Line 
-                      yAxisId="yield"
-                      type="monotone" 
-                      dataKey="yield" 
-                      stroke="hsl(var(--success))" 
-                      strokeWidth={3}
-                      name="Yield %"
-                      dot={{ fill: 'hsl(var(--success))', strokeWidth: 0, r: 4 }}
-                    />
-                    <Line 
-                      yAxisId="income"
-                      type="monotone" 
-                      dataKey="income" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      name="Income ₹"
-                      dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 4 }}
-                    />
+                    <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis yAxisId="yield" orientation="left" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis yAxisId="income" orientation="right" stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }} />
+                    <Line yAxisId="yield" type="monotone" dataKey="yield" stroke="hsl(var(--success))" strokeWidth={3} name="Yield (qtl)" dot={{ fill: 'hsl(var(--success))', r: 4 }} />
+                    <Line yAxisId="income" type="monotone" dataKey="income" stroke="hsl(var(--primary))" strokeWidth={3} name="Income (₹)" dot={{ fill: 'hsl(var(--primary))', r: 4 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -148,32 +171,17 @@ const RiskForecast = () => {
             <CardContent>
               <div className="h-64 w-full chart-enter">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={riskFactors} layout="horizontal">
+                  <BarChart data={riskFactors} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      type="number"
-                      domain={[0, 40]}
-                      stroke="hsl(var(--muted-foreground))"
-                    />
-                    <YAxis 
-                      dataKey="factor"
-                      type="category"
-                      width={80}
-                      stroke="hsl(var(--muted-foreground))"
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '0.5rem'
-                      }}
-                    />
-                    <Bar 
-                      dataKey="risk" 
-                      fill="hsl(var(--warning))"
-                      name="Risk Level %"
-                      radius={[0, 4, 4, 0]}
-                    />
+                    <XAxis type="number" domain={[0, 100]} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis dataKey="factor" type="category" width={100} stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }} />
+                    {/* ✅ Safe fallback color */}
+                    <Bar dataKey="risk" fill="#f59e0b" name="Risk Level %" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -181,7 +189,9 @@ const RiskForecast = () => {
               <div className="mt-6 space-y-3">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Overall Risk Score:</span>
-                  <span className="font-medium text-warning">21.4% (Medium)</span>
+                  <span className="font-medium text-warning">
+                    {summary.overall_risk_pct.toFixed(1)}% ({summary.risk_level})
+                  </span>
                 </div>
                 <div className="bg-muted/30 rounded p-3">
                   <p className="text-xs text-success font-medium">

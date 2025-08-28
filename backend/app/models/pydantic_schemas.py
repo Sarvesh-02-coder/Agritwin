@@ -98,8 +98,8 @@ class PriceData(BaseModel):
 
 class PriceResponse(BaseModel):
     crop: str
-    state: str
-    district: Optional[str]
+    state: Optional[str] = None   # <-- fix
+    district: Optional[str] = None
     avg_price: float
     prices: List[PriceData]
 
@@ -136,3 +136,23 @@ class Profile(BaseModel):
     crop: Optional[str] = None
     smsAlerts: bool = False
     farmArea: float
+
+class YieldIncomePoint(BaseModel):
+    month: str
+    yield_pct: float
+    income_inr: float
+
+class RiskFactor(BaseModel):
+    factor: str
+    risk_pct: float
+
+class RiskForecastResponse(BaseModel):
+    expected_yield_pct: float
+    expected_income_inr: float
+    harvest_date: str
+    overall_risk_level: str  # Low / Medium / High
+    overall_risk_score: float
+
+    yield_forecast: List[YieldIncomePoint]
+    risk_factors: List[RiskFactor]
+    note: str

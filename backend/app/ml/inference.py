@@ -1,129 +1,69 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+# app/ml/inference.py
 import joblib
-import pandas as pd
 from pathlib import Path
-import requests
+import pandas as pd
 
-# ----------------------------
-# Paths (relative to backend/app/ml)
-# ----------------------------
-ROOT_DIR = Path(__file__).resolve().parent
-MODEL_PATH = ROOT_DIR / "artifacts" / "yield_model.pkl"
-CACHE_PATH = ROOT_DIR / "artifacts" / "soil_cache.csv"
+# Import services
+from app.services.profile_service import get_active_profile
+from app.services.weather_service import fetch_weather_summary
+from app.services.soil_service import summarize_soil
+from app.services.irrigation_service import calculate_irrigation
 
-# ----------------------------
-# Load model
-# ----------------------------
+MODEL_PATH = Path(__file__).resolve().parents[0] / "artifacts" / "yield_model.pkl"
+
+# Load trained model
+if not MODEL_PATH.exists():
+    raise RuntimeError("❌ Model not found. Please train it first using train_yield.py")
+
 model = joblib.load(MODEL_PATH)
+print(f"✅ Model loaded from {MODEL_PATH}")
 
-# ----------------------------
-# FastAPI app
-# ----------------------------
-app = FastAPI(title="AgriTwin Yield Prediction API")
+def predict_yield():
+    profile = get_active_profile()
+    if not profile:
+        raise RuntimeError("❌ No active profile found. Please set a profile first.")
 
-# ----------------------------
-# Request schema
-# ----------------------------
-class YieldRequest(BaseModel):
-    soil_moisture_: float
-    soil_pH: float
-    temperature_C: float
-    rainfall_mm: float
-    humidity_: float
-    sunlight_hours: float
-    crop_type: str
-    irrigation_type: str
-    fertilizer_type: str
-    NDVI_index: float
-    total_days: int
-    region: str
-    crop_disease_status: str
-    growing_season_length: int
-    lat: float
-    lon: float
-    refresh_soil: bool = False  # force refresh SoilGrids
+    pincode = profile.get("pincode")
+    crop = profile.get("primary_crop")
+    farm_area = profile.get("farm_area")
 
+    # Fetch data from services
+    weather = fetch_weather_summary(pincode)
+    soil = summarize_soil(pincode)
+    irrigation = calculate_irrigation(crop, farm_area, pincode)
 
-# ----------------------------
-# SoilGrids fetch
-# ----------------------------
-def fetch_soilgrids_data(lat, lon):
-    url = f"https://rest.soilgrids.org/query?lon={lon}&lat={lat}"
-    try:
-        response = requests.get(url, timeout=10)
-        if response.status_code != 200:
-            return {}
-        data = response.json()
-        soil = data["properties"]["layers"]
-        return {
-            "soil_ph_sg": soil["phh2o"]["depths"][0]["values"]["mean"],
-            "organic_carbon": soil["soc"]["depths"][0]["values"]["mean"],
-            "sand_fraction": soil["sand"]["depths"][0]["values"]["mean"],
-            "clay_fraction": soil["clay"]["depths"][0]["values"]["mean"],
-            "silt_fraction": soil["silt"]["depths"][0]["values"]["mean"],
-        }
-    except:
-        return {}
+    # Build feature vector
+    features = {
+        "State": profile.get("state", "Unknown"),
+        "District": profile.get("district", "Unknown"),
+        "Crop": crop,
+        "Crop_Year": 2024,   # can be dynamic
+        "Season": "Kharif",  # can be based on profile/weather
+        "Area": farm_area,
+        "Production": 0,     # placeholder, since we predict Yield
 
+        # Extra features
+        "rainfall_7d_total": weather.get("rainfall_7d_total", 0),
+        "temp_7d_avg": weather.get("temp_7d_avg", 0),
+        "humidity_7d_avg": weather.get("humidity_7d_avg", 0),
+        "soil_ph": soil.get("pH", 0),
+        "soil_soc": soil.get("organic_carbon_pct", 0),
+        "soil_sand": soil.get("sand_pct", 0),
+        "soil_silt": soil.get("silt_pct", 0),
+        "soil_clay": soil.get("clay_pct", 0),
+        "water_needed_mm": irrigation.get("water_needed_mm", 0),
+        "water_needed_liters": irrigation.get("water_needed_liters", 0),
+    }
 
-# ----------------------------
-# Cache manager
-# ----------------------------
-def get_soil_features(lat, lon, refresh=False):
-    if CACHE_PATH.exists():
-        cache = pd.read_csv(CACHE_PATH)
-    else:
-        cache = pd.DataFrame(columns=[
-            "lat", "lon", "soil_ph_sg", "organic_carbon",
-            "sand_fraction", "clay_fraction", "silt_fraction"
-        ])
+    df = pd.DataFrame([features])
 
-    # Look up in cache
-    row = cache[(cache["lat"] == lat) & (cache["lon"] == lon)]
+    # Predict yield
+    predicted_yield = model.predict(df)[0]
 
-    if not row.empty and not refresh:
-        return row.iloc[0].to_dict()
-
-    # Fetch fresh data
-    features = fetch_soilgrids_data(lat, lon)
-    features.update({"lat": lat, "lon": lon})
-
-    # Update cache
-    cache = pd.concat([
-        cache[~((cache["lat"] == lat) & (cache["lon"] == lon))],
-        pd.DataFrame([features])
-    ], ignore_index=True)
-
-    cache.to_csv(CACHE_PATH, index=False)
-
-    return features
-
-
-# ----------------------------
-# Prediction endpoint
-# ----------------------------
-@app.post("/predict_yield")
-def predict_yield(req: YieldRequest):
-    soil_features = get_soil_features(req.lat, req.lon, refresh=req.refresh_soil)
-
-    data = pd.DataFrame([{
-        "soil_moisture_%": req.soil_moisture_,
-        "soil_pH": req.soil_pH,
-        "temperature_C": req.temperature_C,
-        "rainfall_mm": req.rainfall_mm,
-        "humidity_%": req.humidity_,
-        "sunlight_hours": req.sunlight_hours,
-        "crop_type": req.crop_type,
-        "irrigation_type": req.irrigation_type,
-        "fertilizer_type": req.fertilizer_type,
-        "NDVI_index": req.NDVI_index,
-        "total_days": req.total_days,
-        "region": req.region,
-        "crop_disease_status": req.crop_disease_status,
-        "growing_season_length": req.growing_season_length,
-        **soil_features
-    }])
-
-    pred = model.predict(data)[0]
-    return {"predicted_yield": round(float(pred), 2)}
+    return {
+        "profile": profile,
+        "weather": weather,
+        "soil": soil,
+        "irrigation": irrigation,
+        "predicted_yield": float(predicted_yield)
+    }

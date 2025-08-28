@@ -1,31 +1,30 @@
 # backend/app/routers/market.py
-from fastapi import APIRouter, HTTPException, Query
-from app.services.advisors import get_market_prices
+from fastapi import APIRouter, HTTPException
+from app.services.market_service import fetch_market_price
 from app.schemas.response import ResponseModel
 
 router = APIRouter(prefix="/market", tags=["Market Advisory"])
 
 
 @router.get("/", response_model=ResponseModel)
-async def fetch_market_prices(
-    crop: str = Query(..., description="Crop name (e.g., wheat, rice, maize)"),
-    state: str = Query(..., description="Indian state"),
-    district: str = Query(None, description="Optional district")
-):
+async def fetch_market_prices():
     """
-    Fetch market prices for a given crop in a particular state/district.
-    Uses AgMarkNet / internal advisory service.
+    Fetch market prices for the crop in the active profile.
+    Uses AgMarkNet API (via market_service) with fallback to mock prices.
     """
     try:
-        prices = get_market_prices(crop=crop, state=state, district=district)
+        prices = fetch_market_price()  # ✅ profile-driven, no params needed
 
         if not prices:
             raise HTTPException(status_code=404, detail="No market price data available")
 
         return ResponseModel(
             success=True,
-            data=prices,
-            message=f"Market prices for {crop} in {state}{' - ' + district if district else ''} fetched successfully"
+            data=prices.dict(),  # ✅ Pydantic → dict
+            message=(
+                f"Market prices for {prices.crop} "
+                f"in {prices.state}{' - ' + prices.district if prices.district else ''} fetched successfully"
+            ),
         )
 
     except Exception as e:
