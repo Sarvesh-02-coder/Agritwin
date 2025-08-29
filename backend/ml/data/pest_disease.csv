@@ -1,0 +1,46 @@
+crop,season,pest,disease,temp_min,temp_max,humidity_min,humidity_max,note
+wheat,rabi,aphids,rust,10,25,50,80,Favorable during cool moist conditions
+wheat,rabi,armyworm,leaf blight,15,28,55,85,Armyworm outbreaks after rainfall
+wheat,rabi,stem sawfly,loose smut,12,24,50,75,Common in dry cool winters
+wheat,rabi,cutworm,root rot,14,26,55,80,Common in irrigated wheat
+wheat,rabi,thrips,alternaria blight,12,22,50,75,Outbreak in dry winters
+rice,kharif,brown planthopper,blast,20,32,65,90,Thrives in waterlogged fields
+rice,kharif,stem borer,bacterial leaf blight,22,34,60,85,Stem borer common in humid areas
+rice,kharif,gall midge,sheath blight,22,32,65,90,Gall midge attack in low-lying fields
+rice,kharif,leaf folder,leaf streak,22,34,60,85,Severe in warm humid conditions
+rice,zaid,hispa,blast,24,36,65,90,Hot irrigated summers favor hispa
+rice,rabi,leaf hopper,bacterial leaf blight,18,28,55,80,Common in cool irrigated crops
+maize,kharif,stem borer,turcicum leaf blight,18,32,55,85,Occurs in warm humid conditions
+maize,kharif,shoot fly,downy mildew,20,34,60,85,Shoot fly attack in early stages
+maize,kharif,fall armyworm,stalk rot,22,34,55,80,Armyworm persists in dry/wet both
+maize,zaid,cob borer,charcoal rot,24,36,55,85,Hot humid summers favor cob borer
+maize,rabi,aphids,rust,15,28,50,75,Common in cool winter maize
+maize,rabi,corn earworm,leaf blight,16,26,55,80,Earworm during reproductive stage
+tomato,kharif,fruit borer,early blight,20,34,55,85,Fruit borer during high humidity
+tomato,kharif,whitefly,leaf curl,22,34,60,85,Leaf curl spread by whitefly
+tomato,zaid,thrips,late blight,22,36,55,85,Common in summer irrigated fields
+tomato,rabi,cutworm,damping off,12,25,60,85,Severe in nurseries
+tomato,rabi,leaf miner,septoria leaf spot,15,28,55,80,Increases in mild winters
+tomato,kharif,aphids,root knot nematode,22,34,55,85,High pest buildup in humid soils
+potato,rabi,cutworm,late blight,10,22,65,90,Blight increases in cool humid conditions
+potato,rabi,aphids,early blight,12,25,60,85,Common in irrigated potato crops
+potato,rabi,tuber moth,black scurf,15,26,55,80,High during storage and late growth
+potato,rabi,thrips,common scab,12,20,55,75,Favored by dry cool conditions
+potato,rabi,leaf hopper,alternaria leaf spot,14,24,55,80,Increases during cloudy weather
+cotton,kharif,bollworm,leaf curl virus,22,34,60,85,Bollworm thrives in humid hot climate
+cotton,kharif,aphids,root rot,20,30,55,80,High incidence in warm/moist fields
+cotton,kharif,whitefly,leaf curl virus,25,38,55,85,Whiteflies cause viral spread
+cotton,zaid,jassids,anthracnose,25,36,55,85,Jassids thrive in warm summer crops
+cotton,rabi,thrips,leaf spot,18,28,50,75,Thrips attack winter cotton
+cotton,rabi,armyworm,bacterial blight,16,26,55,80,Severe in irrigated cotton
+sugarcane,kharif,early shoot borer,red rot,20,35,65,90,Peaks during high humidity
+sugarcane,kharif,internode borer,wilt,22,34,60,85,Major loss during late crop
+sugarcane,zaid,scale insect,grassy shoot disease,25,38,60,85,Spreads in warm dry fields
+sugarcane,rabi,top borer,smut,18,30,55,80,Smuts spread via dry conditions
+sugarcane,rabi,mealybug,sett rot,16,28,55,80,Common in cool irrigated fields
+onion,rabi,thrips,purple blotch,12,25,55,80,Thrips attack leaves in dry weather
+onion,zaid,cutworm,downy mildew,22,34,60,85,High in summer irrigated crops
+onion,kharif,aphids,basal rot,20,30,55,80,Basal rot spreads with whitefly infestations
+onion,kharif,leaf miner,anthracnose,22,34,60,85,High pest pressure in humid season
+onion,rabi,mites,stemphylium blight,10,20,55,75,Severe in cool dry winters
+onion,zaid,bulb fly,soft rot,24,36,60,90,High incidence in late summer harvest

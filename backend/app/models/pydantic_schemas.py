@@ -72,15 +72,13 @@ class FertilizerAdvice(BaseModel):
 
 
 class PestAlertRequest(BaseModel):
-    crop: str
-    season: str
-    temp_c: float
-    humidity: float
+    pincode: str        # only need pincode
+    crop: str           # crop name
 
 class PestDiseaseAlert(BaseModel):
     pest: str
     disease: str
-    risk: str
+    risk: str           # "High" or "Low"
     note: Optional[str] = None
 
 class PestAlertResponse(BaseModel):

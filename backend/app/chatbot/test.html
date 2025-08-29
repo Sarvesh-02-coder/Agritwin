@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agritwin Chatbot Test</title>
+</head>
+<body>
+<h2>Agritwin Chatbot Test</h2>
+<label>Ask a question:</label>
+<input type="text" id="question" size="50">
+<button onclick="askQuestion()">Send</button>
+
+<p><strong>Answer:</strong> <span id="answer"></span></p>
+
+<script>
+async function askQuestion() {
+    const question = document.getElementById("question").value;
+    const answerSpan = document.getElementById("answer");
+    try {
+        const res = await fetch("http://127.0.0.1:5000/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ question })
+        });
+        const data = await res.json();
+        answerSpan.textContent = data.answer || data.error;
+    } catch (err) {
+        answerSpan.textContent = "Server error: " + err;
+    }
+}
+</script>
+</body>
+</html>

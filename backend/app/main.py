@@ -11,10 +11,11 @@ from app.routers.weather_router import router as weather_router
 from app.routers.farm_report import router as farm_report_router
 from app.routers.profile_router import router as profile_router
 from app.routers.forecast import router as forecast_router
-#from app.routers.smart import router as smart_router
+# from app.routers.smart import router as smart_router
 from app.routers.soil import router as soil_router
-from app.routers import dashboard  # add this import
-  # add this line near other include_router calls
+from app.routers import dashboard
+from app.chatbot.backend.app import router as chatbot_router
+from app.routers.agri_adivsor import router as pest
 
 
 app = FastAPI(title="AgriTwin Backend", version="0.1.0")
@@ -42,7 +43,10 @@ app.include_router(market_router)
 app.include_router(weather_router)
 app.include_router(farm_report_router)
 app.include_router(profile_router)
-#app.include_router(smart_router)
+# app.include_router(smart_router)
 app.include_router(dashboard.router)
 app.include_router(soil_router)
 app.include_router(forecast_router)
+app.include_router(chatbot_router)
+app.include_router(pest)
+

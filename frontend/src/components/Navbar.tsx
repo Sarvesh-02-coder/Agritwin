@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, BarChart3, Radar, Droplets, TrendingUp, MessageSquare, User } from "lucide-react";
+import { Menu, Home, BarChart3, Wheat, Droplets, TrendingUp, MessageSquare, User } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -11,7 +11,7 @@ const Navbar = () => {
   const navigationItems = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "What-If Simulator", href: "/what-if-simulator", icon: BarChart3 },
-    { name: "Pest Radar", href: "/pest-radar", icon: Radar },
+    { name: "crop recommendations", href: "/pest-radar", icon: Wheat },
     { name: "Smart Irrigation", href: "/smart-irrigation", icon: Droplets },
     { name: "Risk Forecast", href: "/risk-forecast", icon: TrendingUp },
     { name: "AgriTwin Coach", href: "/agritwin-coach", icon: MessageSquare },

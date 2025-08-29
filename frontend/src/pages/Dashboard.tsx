@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Cloud, Radar, Droplets, TrendingUp, MessageSquare, User } from "lucide-react";
+import { BarChart3, Cloud, Wheat, Droplets, TrendingUp, MessageSquare, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
@@ -14,11 +14,11 @@ const Dashboard = () => {
       color: "success"
     },
     {
-      title: "Pest Radar",
-      description: "Monitor pest threats and disease risks in real-time",
-      icon: Radar,
+      title: "Crop recommendations",
+      description: "Get crop recommendations and pest alerts",
+      icon: Wheat,
       link: "/pest-radar",
-      color: "warning"
+      color: "success"
     },
     {
       title: "Smart Irrigation",

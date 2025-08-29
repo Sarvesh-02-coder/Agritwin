@@ -1,0 +1,82 @@
+[
+  {
+    "question_en": "What is the best season to grow wheat?",
+    "question_hi": "गेहूं उगाने का सबसे अच्छा मौसम कौन सा है?",
+    "question_mr": "गहू उगवण्यासाठी सर्वोत्तम हंगाम कोणता आहे?",
+    "answer_en": "The best season to grow wheat in India is the Rabi season, from November to April.",
+    "answer_hi": "भारत में गेहूं उगाने का सबसे अच्छा मौसम रबी सीजन है, जो नवंबर से अप्रैल तक होता है।",
+    "answer_mr": "भारतात गहू उगवण्यासाठी सर्वोत्तम हंगाम रब्बी हंगाम आहे, नोव्हेंबर ते एप्रिल."
+  },
+  {
+    "question_en": "Which fertilizer is best for rice?",
+    "question_hi": "धान के लिए सबसे अच्छा उर्वरक कौन सा है?",
+    "question_mr": "तांदळासाठी सर्वोत्तम खत कोणते आहे?",
+    "answer_en": "Rice needs nitrogen, phosphorus, and potassium. Urea, DAP, and potash are recommended.",
+    "answer_hi": "धान के लिए नाइट्रोजन, फॉस्फोरस और पोटाश की आवश्यकता होती है। यूरिया, डीएपी और पोटाश अच्छे हैं।",
+    "answer_mr": "तांदळासाठी नायट्रोजन, फॉस्फरस आणि पोटॅशची गरज असते. युरिया, डीएपी आणि पोटॅश उपयुक्त आहेत."
+  },
+  {
+    "question_en": "How to control bollworm in cotton?",
+    "question_hi": "कपास में बॉलवर्म को कैसे नियंत्रित करें?",
+    "question_mr": "कापसामध्ये बॉलवर्म कसा नियंत्रण करावा?",
+    "answer_en": "Use pheromone traps, resistant varieties, and approved insecticides like Emamectin Benzoate.",
+    "answer_hi": "कपास में फेरोमोन ट्रैप, प्रतिरोधक किस्में और इमामेक्टिन बेंजोएट जैसे कीटनाशक उपयोग करें।",
+    "answer_mr": "कापसामध्ये फेरोमोन ट्रॅप, प्रतिरोधक वाण आणि इमामेक्टिन बेंजोएट सारखी कीटकनाशके वापरा."
+  },
+  {
+    "question_en": "How to identify late blight in potato?",
+    "question_hi": "आलू में लेट ब्लाइट रोग की पहचान कैसे करें?",
+    "question_mr": "बटाट्यामध्ये लेट ब्लाइट रोग कसा ओळखावा?",
+    "answer_en": "Dark brown spots on leaves, rapid drying, and rotting of tubers are symptoms of late blight.",
+    "answer_hi": "पत्तियों पर गहरे भूरे धब्बे, तेजी से सूखना और कंद सड़ना लेट ब्लाइट की पहचान है।",
+    "answer_mr": "पानांवर गडद तपकिरी डाग, जलद वाळणे आणि गाठी कुजणे ही लेट ब्लाइटची लक्षणे आहेत."
+  },
+  {
+    "question_en": "Which irrigation method saves most water?",
+    "question_hi": "कौन सी सिंचाई पद्धति सबसे ज्यादा पानी बचाती है?",
+    "question_mr": "कोणती सिंचन पद्धत सर्वाधिक पाणी वाचवते?",
+    "answer_en": "Drip irrigation saves the most water and increases crop productivity.",
+    "answer_hi": "ड्रिप सिंचाई सबसे ज्यादा पानी बचाती है और फसल उत्पादकता बढ़ाती है।",
+    "answer_mr": "ठिबक सिंचन सर्वाधिक पाणी वाचवते आणि पिकाची उत्पादकता वाढवते."
+  },
+  {
+    "question_en": "What is organic farming?",
+    "question_hi": "जैविक खेती क्या है?",
+    "question_mr": "सेंद्रिय शेती म्हणजे काय?",
+    "answer_en": "Organic farming avoids synthetic chemicals and uses natural manure, compost, and bio-fertilizers.",
+    "answer_hi": "जैविक खेती में रासायनिक उर्वरक और कीटनाशकों का उपयोग नहीं होता, केवल प्राकृतिक खाद और कम्पोस्ट का उपयोग होता है।",
+    "answer_mr": "सेंद्रिय शेतीमध्ये रासायनिक खते आणि कीटकनाशकांचा वापर न करता फक्त नैसर्गिक खत व कंपोस्ट वापरले जाते."
+  },
+  {
+    "question_en": "Which crop is suitable for black soil?",
+    "question_hi": "काली मिट्टी के लिए कौन सी फसल उपयुक्त है?",
+    "question_mr": "काळ्या जमिनीसाठी कोणते पीक योग्य आहे?",
+    "answer_en": "Cotton, soybean, and sunflower grow well in black soil.",
+    "answer_hi": "काली मिट्टी में कपास, सोयाबीन और सूरजमुखी अच्छी तरह उगते हैं।",
+    "answer_mr": "काळ्या जमिनीत कापूस, सोयाबीन आणि सुर्यमुखी चांगले उगवतात."
+  },
+  {
+    "question_en": "What are common banana diseases?",
+    "question_hi": "केले की आम बीमारियाँ कौन सी हैं?",
+    "question_mr": "केळीचे सामान्य रोग कोणते?",
+    "answer_en": "Common banana diseases include Panama wilt, Sigatoka leaf spot, and Bunchy top virus.",
+    "answer_hi": "केले की सामान्य बीमारियाँ हैं: पनामा विल्ट, सिगाटोका लीफ स्पॉट और बंची टॉप वायरस।",
+    "answer_mr": "केळीचे सामान्य रोग आहेत: पनामा विल्ट, सिगाटोका पान डाग व बंची टॉप विषाणू."
+  },
+  {
+    "question_en": "How to test soil fertility?",
+    "question_hi": "मिट्टी की उर्वरता कैसे जांचें?",
+    "question_mr": "मातीची सुपीकता कशी तपासावी?",
+    "answer_en": "Soil fertility can be tested by laboratory soil testing for pH, nitrogen, phosphorus, and potassium.",
+    "answer_hi": "मिट्टी की उर्वरता प्रयोगशाला में pH, नाइट्रोजन, फॉस्फोरस और पोटाश की जांच से की जाती है।",
+    "answer_mr": "मातीची सुपीकता प्रयोगशाळेत pH, नायट्रोजन, फॉस्फरस आणि पोटॅश तपासून केली जाते."
+  },
+  {
+    "question_en": "Which government schemes support farmers?",
+    "question_hi": "किसानों के लिए कौन सी सरकारी योजनाएँ हैं?",
+    "question_mr": "शेतकऱ्यांसाठी कोणत्या शासकीय योजना आहेत?",
+    "answer_en": "Some key schemes are: PM-Kisan, Kisan Credit Card, PM Fasal Bima Yojana, Soil Health Card, eNAM.",
+    "answer_hi": "कुछ प्रमुख योजनाएँ हैं: पीएम-किसान, किसान क्रेडिट कार्ड, पीएम फसल बीमा योजना, मृदा स्वास्थ्य कार्ड, ई-नाम।",
+    "answer_mr": "काही प्रमुख योजना आहेत: पीएम-किसान, किसान क्रेडिट कार्ड, पीएम पिक विमा योजना, मृदा आरोग्य कार्ड, ई-नाम."
+  }
+]

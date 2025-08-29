@@ -172,3 +172,26 @@ async def get_weather_data(pincode: str):
     summary = fetch_weather_summary(pincode)
     weekly = fetch_weekly_series(pincode)
     return summary, weekly
+
+
+def fetch_weather_features(pincode: str) -> dict:
+    """
+    Fetch processed weather features for recommendation and pest services.
+    Uses the last 7 days summary.
+    Returns: dict with avg temp, avg humidity, total rainfall, avg sunlight.
+    """
+    created_date = date.today().strftime("%Y%m%d")
+    csv_path = DATA_DIR / f"weather_{pincode}_{created_date}.csv"
+
+    if not csv_path.exists():
+        fetch_weather(pincode, days=30)
+
+    df = pd.read_csv(csv_path, parse_dates=["date"])
+    last7 = df.tail(7)
+
+    return {
+        "avg_temp": round(last7["temperature_C"].mean(), 1),
+        "avg_humidity": round(last7["humidity_pct"].mean(), 1),
+        "total_rainfall": round(last7["rainfall_mm"].sum(), 1),
+        "avg_sunlight": round(last7["sunlight_hours"].mean(), 1),
+    }
