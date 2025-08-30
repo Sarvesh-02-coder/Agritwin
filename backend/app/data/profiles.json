@@ -6,7 +6,7 @@
     "location": "411044",
     "smsAlerts": true,
     "farmArea": 4,
-    "active": false
+    "active": true
   },
   {
     "name": "Sam",
@@ -24,7 +24,7 @@
     "location": "412307",
     "smsAlerts": true,
     "farmArea": 5,
-    "active": true
+    "active": false
   },
   {
     "name": "Laukika",

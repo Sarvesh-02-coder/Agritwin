@@ -12,6 +12,8 @@ import RiskForecast from "./pages/RiskForecast";
 import AgriTwinCoach from "./pages/AgriTwinCoach";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import LanguageSelector from "@/components/LanguageSelector"; // ✅ import
+import "./i18n"; // ✅ initialize i18n once at root
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        {/* ✅ Global Language Selector */}
+        <LanguageSelector />
+
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />

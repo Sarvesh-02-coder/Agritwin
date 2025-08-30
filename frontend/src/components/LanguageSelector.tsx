@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Languages } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Language = {
   code: string;
@@ -10,39 +17,41 @@ type Language = {
 };
 
 const languages: Language[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-  { code: 'mr', name: 'मराठी', flag: '🇮🇳' }
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "hi", name: "हिंदी", flag: "🇮🇳" },
+  { code: "mr", name: "मराठी", flag: "🇮🇳" },
 ];
 
 const LanguageSelector = () => {
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
 
   useEffect(() => {
-    // Check if user has visited before
-    const hasVisited = localStorage.getItem('agritwin-language-selected');
+    const hasVisited = localStorage.getItem("agritwin-language-selected");
     if (!hasVisited) {
       setIsOpen(true);
     } else {
-      const savedLanguage = localStorage.getItem('agritwin-language');
+      const savedLanguage = localStorage.getItem("agritwin-language");
       if (savedLanguage) {
-        const lang = languages.find(l => l.code === savedLanguage);
+        const lang = languages.find((l) => l.code === savedLanguage);
         if (lang) setSelectedLanguage(lang);
+        i18n.changeLanguage(savedLanguage); // ✅ set correct language on load
       }
     }
-  }, []);
+  }, [i18n]);
 
   const handleLanguageSelect = (language: Language) => {
     setSelectedLanguage(language);
-    localStorage.setItem('agritwin-language', language.code);
-    localStorage.setItem('agritwin-language-selected', 'true');
+    localStorage.setItem("agritwin-language", language.code);
+    localStorage.setItem("agritwin-language-selected", "true");
+    i18n.changeLanguage(language.code); // ✅ switch instantly
+
     setIsOpen(false);
   };
 
   return (
     <>
-      {/* Language Toggle Button */}
       <Button
         variant="ghost"
         size="sm"
@@ -53,7 +62,6 @@ const LanguageSelector = () => {
         {selectedLanguage.flag} {selectedLanguage.name}
       </Button>
 
-      {/* Language Selection Modal */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-md card-gradient glow-primary">
           <DialogHeader className="text-center">
@@ -68,15 +76,19 @@ const LanguageSelector = () => {
               तुमची आवडती भाषा निवडा
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-3 mt-6">
             {languages.map((language) => (
               <Button
                 key={language.code}
-                variant={selectedLanguage.code === language.code ? "default" : "outline"}
+                variant={
+                  selectedLanguage.code === language.code ? "default" : "outline"
+                }
                 size="lg"
                 className={`w-full justify-start text-left transition-smooth ${
-                  selectedLanguage.code === language.code ? "glow-primary" : "hover:glow-primary"
+                  selectedLanguage.code === language.code
+                    ? "glow-primary"
+                    : "hover:glow-primary"
                 }`}
                 onClick={() => handleLanguageSelect(language)}
               >

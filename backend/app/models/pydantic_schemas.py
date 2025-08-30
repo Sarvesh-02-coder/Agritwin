@@ -1,8 +1,7 @@
-
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Dict
 
-
+# ---------- Crop Recommendation ----------
 class CropRecommendRequest(BaseModel):
     season: str
     soil_pH: float
@@ -17,21 +16,18 @@ class CropRecommendation(BaseModel):
 class CropRecommendResponse(BaseModel):
     recommendations: List[CropRecommendation]
 
+
+# ---------- Irrigation ----------
 class IrrigationRequest(BaseModel):
     crop: str
     area_hectares: float
     soil_moisture: float  # % volumetric water content
     pincode: str          # Needed to fetch NASA weather
 
-from pydantic import BaseModel
-from typing import Optional, List
-
-
 class IrrigationProfile(BaseModel):
     crop: str
     farmArea: float
     location: str   # pincode
-
 
 class IrrigationResponse(BaseModel):
     water_needed_mm: float
@@ -41,7 +37,7 @@ class IrrigationResponse(BaseModel):
     weather_weekly: List[dict]
 
 
-
+# ---------- Fertilizer ----------
 SoilLevel = Literal["low", "medium", "high"]
 
 class FertilizerRequest(BaseModel):
@@ -71,19 +67,25 @@ class FertilizerAdvice(BaseModel):
     rationale: List[str]
 
 
+# ---------- Pest ----------
 class PestAlertRequest(BaseModel):
-    pincode: str        # only need pincode
-    crop: str           # crop name
+    crop: str
+    season: Optional[str] = None
+    temp_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    pincode: Optional[str] = None   # ✅ restored for backward compatibility
 
 class PestDiseaseAlert(BaseModel):
     pest: str
     disease: str
-    risk: str           # "High" or "Low"
+    risk: str
     note: Optional[str] = None
 
 class PestAlertResponse(BaseModel):
     alerts: List[PestDiseaseAlert]
 
+
+# ---------- Price ----------
 class PriceRequest(BaseModel):
     crop: str
     state: str
@@ -96,11 +98,13 @@ class PriceData(BaseModel):
 
 class PriceResponse(BaseModel):
     crop: str
-    state: Optional[str] = None   # <-- fix
+    state: Optional[str] = None
     district: Optional[str] = None
     avg_price: float
     prices: List[PriceData]
 
+
+# ---------- Farm Report ----------
 class FarmReportRequest(BaseModel):
     soil_pH: Optional[float] = None
     rainfall_mm_7d: Optional[float] = None
@@ -113,20 +117,23 @@ class FarmReportRequest(BaseModel):
     temp_c: Optional[float] = None
     humidity_pct: Optional[float] = None
 
+
+# ---------- Market ----------
 class MarketRequest(BaseModel):
     commodity: str
     state: Optional[str] = None
     district: Optional[str] = None
 
+
+# ---------- Pest Request ----------
 class PestRequest(BaseModel):
     crop: str
     season: Optional[str] = None
     temp_c: Optional[float] = None
     humidity_pct: Optional[float] = None
 
-from pydantic import BaseModel
-from typing import Optional
 
+# ---------- Profile ----------
 class Profile(BaseModel):
     name: str
     phone: str
@@ -135,6 +142,8 @@ class Profile(BaseModel):
     smsAlerts: bool = False
     farmArea: float
 
+
+# ---------- Risk Forecast ----------
 class YieldIncomePoint(BaseModel):
     month: str
     yield_pct: float
@@ -154,3 +163,21 @@ class RiskForecastResponse(BaseModel):
     yield_forecast: List[YieldIncomePoint]
     risk_factors: List[RiskFactor]
     note: str
+
+
+# ---------- What-If Simulator ----------
+class WhatIfRequest(BaseModel):
+    crop: Optional[str] = None
+    pincode: Optional[str] = None
+    area_ha: Optional[float] = None
+    season: Optional[str] = None
+
+    # Overrides
+    rainfall_mm: Optional[float] = None
+    temp_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    soil_pH: Optional[float] = None
+
+    # New inputs from frontend
+    sowing_delay: Optional[int] = 0        # delay in weeks
+    irrigation_delay: Optional[int] = 0    # delay in weeks
