@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from app.models.pydantic_schemas import PriceResponse, PriceData
 from app.services import profile_service
 
-BASE_URL = "https://agmarknet.gov.in/api/Report/CommodityWiseDailyReport"
+BASE_UL = "https://agmarknet.gov.in/api/Report/CommodityWiseDailyReport"
 GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
 
 
@@ -69,7 +69,7 @@ def fetch_market_price() -> PriceResponse:
     }
 
     try:
-        resp = requests.get(BASE_URL, params=params, timeout=15)
+        resp = requests.get(BASE_UL, params=params, timeout=15)
         resp.raise_for_status()
         data = resp.json()
 
