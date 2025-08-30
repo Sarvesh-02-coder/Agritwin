@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Routers
 from app.routers.crop import router as crop_router
 from app.routers.irrigation import router as irrigation_router

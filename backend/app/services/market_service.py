@@ -1,12 +1,23 @@
-# app/services/market_service.py
+import os
 import requests
 import random
 from datetime import date, timedelta
 from app.models.pydantic_schemas import PriceResponse, PriceData
 from app.services import profile_service
+from dotenv import load_dotenv
+from pathlib import Path
 
-BASE_UL = "https://agmarknet.gov.in/api/Report/CommodityWiseDailyReport"
-GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
+# --- Base directories ---
+BASE_DIR = Path(__file__).resolve().parent      # app/services
+BACKEND_ROOT = BASE_DIR.parents[2]             # backend root
+
+# --- Load centralized .env ---
+ENV_PATH = BACKEND_ROOT / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
+
+# --- API URLs from .env ---
+BASE_UL = os.getenv("BASE_UL", "https://agmarknet.gov.in/api/Report/CommodityWiseDailyReport")
+GEOCODE_URL = os.getenv("GEOCODE_URL", "https://nominatim.openstreetmap.org/search")
 
 
 def pincode_to_state_district(pincode: str):

@@ -1,21 +1,28 @@
-# app/services/soil_service.py
+import os
 import requests
 import json
 import pandas as pd
 from pathlib import Path
 from datetime import date
 import math
+from dotenv import load_dotenv
 
-# Paths
-CACHE_DIR = Path(__file__).parent.parent / "cache"
-DATA_DIR = Path(__file__).resolve().parents[3] / "ml" / "data"
+# --- Base directories ---
+BASE_DIR = Path(__file__).resolve().parent      # app/services
+BACKEND_ROOT = BASE_DIR.parents[2]             # backend root
+CACHE_DIR = BACKEND_ROOT / "cache"
+DATA_DIR = BACKEND_ROOT / "ml" / "data"
 
 CACHE_DIR.mkdir(exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
-SOILGRIDS_URL = "https://rest.isric.org/soilgrids/v2.0/properties/query"
+# --- Load centralized .env ---
+ENV_PATH = BACKEND_ROOT / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
 
+# --- API URLs from .env ---
+GEOCODE_URL = os.getenv("GEOCODE_URL", "https://nominatim.openstreetmap.org/search")
+SOILGRIDS_URL = os.getenv("SOILGRIDS_URL", "https://rest.isric.org/soilgrids/v2.0/properties/query")
 
 # ✅ fallback soil values (safe defaults)
 DEFAULT_SOIL = {
@@ -63,7 +70,6 @@ def query_soilgrids(lat: float, lon: float):
         return resp.json()
     except requests.exceptions.HTTPError as e:
         if resp.status_code == 429:
-            # Too many requests → fallback
             return None
         raise e
     except Exception:
@@ -88,10 +94,7 @@ def parse_soilgrids(data: dict) -> dict:
 
 
 def fetch_with_fallback(lat, lon, max_km=20, step_km=2):
-    """
-    Try SoilGrids at lat/lon, expand radius until valid.
-    Returns (data, distance_km)
-    """
+    """Try SoilGrids at lat/lon, expand radius until valid. Returns (data, distance_km)."""
     for r in range(0, max_km + 1, step_km):
         for angle in range(0, 360, 45):
             dx = (r / 111) * math.cos(math.radians(angle))
@@ -101,9 +104,8 @@ def fetch_with_fallback(lat, lon, max_km=20, step_km=2):
             raw = query_soilgrids(test_lat, test_lon)
             parsed = parse_soilgrids(raw)
 
-            if parsed:  # ✅ found something
+            if parsed:
                 return parsed, r
-
     return {}, None
 
 
@@ -120,7 +122,6 @@ def fetch_soil_data(pincode: str):
     else:
         parsed, distance_used = fetch_with_fallback(lat, lon)
         if not parsed:
-            # ✅ fallback soil values if SoilGrids fails
             parsed = DEFAULT_SOIL.copy()
             distance_used = None
 
