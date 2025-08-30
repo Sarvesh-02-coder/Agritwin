@@ -1,0 +1,160 @@
+{
+  "dashboard": {
+    "title": "AgriTwin Dashboard",
+    "subtitle": "Your smart digital farm twin - manage all farming operations from one place",
+    "whatif": "What-If Simulator",
+    "whatif_desc": "Simulate crop growth scenarios with different conditions",
+    "crop_reco": "Crop Recommendations",
+    "crop_reco_desc": "Get crop recommendations and pest alerts",
+    "smart_irrigation": "Smart Irrigation",
+    "smart_irrigation_desc": "Optimize water usage with intelligent recommendations",
+    "risk_income": "Risk & Income Forecasting",
+    "risk_income_desc": "Predict yields and forecast income potential",
+    "coach": "AgriTwin Coach",
+    "coach_desc": "Get AI-powered farming advice and guidance",
+    "profile": "Profile",
+    "profile_desc": "Manage your farm profile and notification settings",
+    "explore": "Explore Feature"
+  },
+
+  "whatif": {
+    "title": "What-If Simulator",
+    "subtitle": "Simulate different farming scenarios and see their impact on crop yield",
+    "scenario": "Scenario Parameters",
+    "scenario_desc": "Adjust the sliders to simulate different conditions",
+    "sowing_delay": "Sowing Delay: {{days}} days",
+    "irrigation_delay": "Irrigation Delay: {{days}} days",
+    "impact": "Impact Summary",
+    "expected": "Expected Yield Impact:",
+    "risk_level": "Risk Level:",
+    "growth": "Crop Growth Simulation",
+    "growth_desc": "Projected yield over time based on your scenario"
+  },
+
+  "crop_reco": {
+    "title": "Crop Recommendations",
+    "subtitle": "Best crop suggestions based on soil, weather, and season",
+    "recommendations": "Suggested crops to maximize yield and sustainability",
+    "active_alerts": "Active Pest Alerts",
+    "alert_sub": "Real-time pest and disease warnings",
+    "recommended": "Recommended",
+    "farmer_pref": "Farmer preference for {{crop}} honored",
+    "proceed_crop": "Proceed with {{crop}} planning this season",
+    "select_variety": "Select short-duration pulse varieties",
+    "monitor": "Monitor and apply preventive measures"
+  },
+
+  "irrigation": {
+    "title": "Smart Irrigation",
+    "subtitle": "Optimize water usage with intelligent recommendations",
+    "today": "Today's Recommendation",
+    "requirement": "{{amount}}mm required this week",
+    "rainfall": "{{amount}}mm 7-Day Rainfall",
+    "temperature": "{{temp}}°C Avg Temp",
+    "optimal_time": "Optimal timing: {{time}}",
+    "weekly_analysis": "Weekly Water Analysis",
+    "tracker": "Water Usage Tracker",
+    "tracker_desc": "Monitor your water consumption efficiency",
+    "weekly_usage": "Weekly Usage",
+    "required": "Required This Week",
+    "saved": "Saved vs Target"
+  },
+
+  "risk": {
+    "title": "Risk & Income Forecasting",
+    "subtitle": "Predict yields and analyze income potential with risk assessment",
+    "expected_yield": "Expected Yield",
+    "expected_income": "Expected Income",
+    "harvest_date": "Harvest Date",
+    "risk_level": "Risk Level",
+    "forecast": "Yield & Income Forecast",
+    "forecast_sub": "6-month projection based on current conditions",
+    "analysis": "Risk Factor Analysis",
+    "analysis_sub": "Key risks that could impact your farm's performance",
+    "overall_risk": "Overall Risk Score:",
+    "weather": "Weather",
+    "market": "Market Price",
+    "pest": "Pest/Disease",
+    "costs": "Input Costs",
+    "labor": "Labor"
+  },
+
+  "coach": {
+    "title": "AgriTwin Coach",
+    "subtitle": "Get AI-powered farming advice and guidance",
+    "assistant": "AgriTwin Assistant",
+    "assistant_desc": "Your intelligent farming companion",
+    "welcome_msg": "Hello! I'm your AgriTwin Coach. I can help you with farming advice, crop recommendations, and answer any agricultural questions you have.",
+    "placeholder": "Ask me anything about farming..."
+  },
+
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your farm profile and notification preferences",
+    "farm_profile": "Farm Profile",
+    "full_name": "Full Name",
+    "phone": "Phone Number",
+    "pincode": "PIN Code",
+    "primary_crop": "Primary Crop",
+    "farm_area": "Farm Area (in acres)",
+    "save": "Save Profile",
+    "alerts": "Send me SMS alerts 5-7 days before critical farming activities",
+    "alerts_desc": "Get timely notifications for irrigation, pest control, and harvest reminders",
+    "notification": "Notification Preferences",
+    "weather_alerts": "Weather Alerts",
+    "weather_alerts_desc": "Receive severe weather warnings",
+    "market_alerts": "Market Price Updates",
+    "market_alerts_desc": "Get daily crop price notifications",
+    "pest_alerts": "Pest & Disease Warnings",
+    "pest_alerts_desc": "Early warning system for crop threats"
+  },
+
+  "common": {
+    "error": "Something went wrong.",
+    "connectionError": "Unable to connect to the server.",
+    "detectedLanguage": "Detected Language"
+  },
+  "agritwin": {
+    "welcome": "Hello! I am your AgriTwin Coach. How can I help?",
+    "title": "AgriTwin Coach",
+    "subtitle": "Your AI farming assistant for better decisions.",
+    "assistantTitle": "AI Assistant",
+    "assistantDesc": "Ask me anything about farming, pests, soil, or weather.",
+    "placeholder": "Type your question..."
+  },
+
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+
+  "whatIfSimulator": {
+    "heading": "What-If Simulator",
+    "subheading": "Simulate different farming scenarios and see their impact on crop yield",
+    
+    "scenario": {
+      "title": "Scenario Parameters",
+      "description": "Adjust the sliders to simulate different conditions",
+      "sowingDelay": "Sowing Delay: {{days}} days",
+      "irrigationDelay": "Irrigation Delay: {{days}} days"
+    },
+
+    "impact": {
+      "title": "Impact Summary",
+      "expectedImpact": "Expected Yield Impact:",
+      "riskLevel": "Risk Level:",
+      "risk": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+
+    "chart": {
+      "title": "Crop Growth Simulation",
+      "description": "Projected yield over time based on your scenario"
+    }
+  }
+}
+
